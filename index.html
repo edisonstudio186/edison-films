@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edison | 影音 · 影像敘事作品集</title>
+    <title>Kevin | 影音 · 影像敘事作品集</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@1,500;1,600&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -65,11 +65,17 @@
         .film-icon { position:absolute; right:1rem; bottom:1.25rem; border:1px solid #fffa; border-radius:50%; width:2rem; height:2rem; display:grid; place-items:center; font-size:.8rem; }
         #film-dialog { margin:auto; background:#161617; color:white; padding:.75rem 1rem; border:1px solid #464648; border-radius:12px; max-width:94vw; }
         #film-dialog::backdrop { background:#000d; }
-        .film-toolbar,#board-nav:not([hidden]) { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+        .film-toolbar { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
         .film-toolbar h3 { font-weight:700; } #film-dialog button { padding:.5rem .75rem; }
-        #film-media video,#film-media img { display:block; margin:auto; max-height:71vh; max-height:71dvh; max-width:83vw; width:auto; object-fit:contain; }
+        #film-media video { display:block; margin:auto; max-height:71vh; max-height:71dvh; max-width:83vw; width:auto; object-fit:contain; }
         button:focus-visible { outline:3px solid #93c5fd; outline-offset:2px; }
-        #board-nav button:disabled { opacity:.3; }
+        .kevin-cover { width:100%; margin:auto; position:relative; container-type:inline-size; }
+        .kevin-cover img { display:block; width:100%; height:auto; }
+        .cover-name { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding-left:6%; background:linear-gradient(90deg,#0c0d10 0%,#0c0d10 41.4%,transparent 53%); }
+        .cover-name h1 { color:white; margin:0; font-size:clamp(2rem,10cqw,9rem); letter-spacing:-.055em; font-weight:900; line-height:1; }
+        .cover-name p { margin:.65em 0 0; font-size:clamp(.85rem,2.2cqw,2rem); color:#ddd; letter-spacing:.15em; }
+        #work { scroll-margin-top:5rem; }
+        @media (min-width:1280px) { .kevin-cover { width:70%; } }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased">
@@ -77,17 +83,17 @@
     <!-- 導覽列 -->
     <nav class="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
         <div class="w-full xl:w-[70%] mx-auto px-5 py-4 flex justify-center xl:justify-between items-center">
-            <a href="#top" class="text-base font-black tracking-[0.2em]">Edison Portfolio<span class="text-white/40">.</span></a>
+            <a href="#top" class="text-base font-black tracking-[0.2em]">Kevin Portfolio<span class="text-white/40">.</span></a>
             <span class="hidden xl:block text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Short Video · Filmmaker</span>
         </div>
     </nav>
 
     <!-- 主視覺 / 滿板封面（文字疊在封面上）-->
     <header id="top" class="cover-slot relative w-full overflow-hidden">
-
-        <!-- 背景封面照：完整顯示原圖、不裁切；桌機縮到 70% 寬置中 -->
-        <img src="cover.JPG" alt="Edison 剪輯行銷" class="block w-full h-auto xl:w-[70%] xl:mx-auto">
-
+        <div class="kevin-cover">
+            <img src="cover.JPG" alt="Kevin 在剪輯工作室" width="1280" height="723">
+            <div class="cover-name"><h1>Kevin</h1><p>剪輯行銷</p></div>
+        </div>
     </header>
 
     <!-- 跑馬燈 -->
@@ -159,58 +165,57 @@
 
     <!-- 作品區 -->
     <section id="work" class="w-full px-5 xl:w-[70%] xl:px-0 mx-auto mt-16">
-        <h2 class="text-3xl xl:text-5xl font-black tracking-tight mb-8">劇情短片 <span class="serif-italic font-normal text-white/40">/ Works</span></h2>
+        <h2 class="text-3xl xl:text-5xl font-black tracking-tight mb-8">短劇應徵作品集 <span class="serif-italic font-normal text-white/40">/ Works</span></h2>
         <div class="film-grid">
-            <button class="film-card" type="button" data-source="tiger" data-title="小虎" aria-haspopup="dialog">
-                <img src="tiger.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 26 秒</span><strong>小虎</strong></span>
+            <button class="film-card" type="button" data-source="construction" data-title="工地周轉" aria-haspopup="dialog">
+                <img src="construction.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">1:05</span><strong>工地周轉</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="settlement" data-title="工程周轉與交割" aria-haspopup="dialog">
-                <img src="settlement.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 19 秒</span><strong>工程周轉與交割</strong></span>
+            <button class="film-card" type="button" data-source="taiwan-gta" data-title="台灣版 GTA" aria-haspopup="dialog">
+                <img src="taiwan-gta.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:38</span><strong>台灣版 GTA</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="period-1" data-title="台灣年代犯罪故事" aria-haspopup="dialog">
-                <img src="period-1.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">分鏡 · 3 張</span><strong>台灣年代犯罪故事</strong></span>
-                <span class="film-icon" aria-hidden="true">▧</span>
-            </button>
-            <button class="film-card" type="button" data-source="action" data-title="犯罪與動作短片" aria-haspopup="dialog">
-                <img src="action.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 30 秒</span><strong>犯罪與動作短片</strong></span>
+            <button class="film-card" type="button" data-source="business-credit" data-title="企業週轉廣告" aria-haspopup="dialog">
+                <img src="business-credit.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:41</span><strong>企業週轉廣告</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="factory" data-title="食品工廠" aria-haspopup="dialog">
-                <img src="factory.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 4 秒</span><strong>食品工廠</strong></span>
+            <button class="film-card" type="button" data-source="film-cut" data-title="成片" aria-haspopup="dialog">
+                <img src="film-cut.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:38</span><strong>成片</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="lounge" data-title="酒店包廂" aria-haspopup="dialog">
-                <img src="lounge.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 25 秒</span><strong>酒店包廂</strong></span>
+            <button class="film-card" type="button" data-source="florist" data-title="自營商花店" aria-haspopup="dialog">
+                <img src="florist.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:35</span><strong>自營商花店</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="office" data-title="辦公室微電影" aria-haspopup="dialog">
-                <img src="office.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 21 秒</span><strong>辦公室微電影</strong></span>
+            <button class="film-card" type="button" data-source="full-film" data-title="Kevin 剪輯自介" aria-haspopup="dialog">
+                <img src="full-film.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:50</span><strong>Kevin 剪輯自介</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="seafood" data-title="龍哥與海產" aria-haspopup="dialog">
-                <img src="seafood.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 15 秒</span><strong>龍哥與海產</strong></span>
+            <button class="film-card" type="button" data-source="stock-settlement" data-title="股票交割" aria-haspopup="dialog">
+                <img src="stock-settlement.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:33</span><strong>股票交割</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
-            <button class="film-card" type="button" data-source="repayment" data-title="還款衝突" aria-haspopup="dialog">
-                <img src="repayment.webp" alt="" loading="lazy">
-                <span class="film-caption"><span class="film-kind">短片 · 24 秒</span><strong>還款衝突</strong></span>
+            <button class="film-card" type="button" data-source="episode-916" data-title="第一級916" aria-haspopup="dialog">
+                <img src="episode-916.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:20</span><strong>第一級916</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="episode-one" data-title="第一集" aria-haspopup="dialog">
+                <img src="episode-one.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">0:45</span><strong>第一集</strong></span>
                 <span class="film-icon" aria-hidden="true">▶</span>
             </button>
         </div>
         <dialog id="film-dialog" aria-labelledby="film-title">
             <div class="film-toolbar"><h3 id="film-title"></h3><button type="button" id="film-close" aria-label="關閉作品">✕</button></div>
             <div id="film-media"></div>
-            <div id="board-nav" hidden><button type="button" id="prev-board" aria-label="上一張分鏡">←</button><span id="board-count" aria-live="polite"></span><button type="button" id="next-board" aria-label="下一張分鏡">→</button></div>
         </dialog>
     </section>
 
@@ -225,13 +230,13 @@
                     <p>一部影片剪得好看，就一定能帶來客戶嗎？</p>
                     <p>我認為，畫面精緻、節奏流暢，只是一部影片最基本的條件。</p>
                     <p>真正重要的是，它能不能在前三秒抓住觀眾、把產品價值講清楚，最後引導觀眾採取行動，替品牌帶來詢問與轉換。</p>
-                    <p>嗨，大家好，我是 Edison。</p>
+                    <p>嗨，大家好，我是 Kevin。</p>
                     <p>我擁有四、五年的攝影與剪輯經驗，同時也做過銷售、接觸過行銷，更有實際創業的經驗。</p>
                     <p>所以在製作影片時，我不會只站在剪輯師的角度思考，而是會從品牌定位、消費者心理和銷售流程出發，去設計影片的 Hook、內容節奏以及 CTA。</p>
                     <p>除了傳統的拍攝與剪輯，我也會運用 AI 動畫、視覺特效和場景設計，把原本難以拍攝、難以理解的內容，轉化成更直觀、更有記憶點的畫面。</p>
                     <p>我提供的不只是剪輯技術，而是一套結合影像、AI、行銷與銷售思維的內容解決方案。</p>
                     <p>因為一部真正有效的影片，不只要有人看，更要讓對的人看懂、相信，最後願意採取行動。</p>
-                    <p>如果你也希望影片不只是好看，而是能真正幫品牌創造價值，我是 Edison，期待與你一起完成下一部作品。</p>
+                    <p>如果你也希望影片不只是好看，而是能真正幫品牌創造價值，我是 Kevin，期待與你一起完成下一部作品。</p>
                 </div>
             </div>
 
@@ -250,7 +255,7 @@
     <footer id="contact" class="py-20 px-6 text-center bg-[var(--panel)] mt-auto border-t border-white/10">
         <h2 class="text-xl xl:text-3xl font-bold tracking-tight mb-3">Let's make it together</h2>
         <p class="text-xl xl:text-3xl font-bold mb-8">有拍攝或剪輯需求？直接聊聊吧。</p>
-        <p class="mt-16 text-[10px] text-white/20 tracking-[0.2em]">© Edison portfolio.</p>
+        <p class="mt-16 text-[10px] text-white/20 tracking-[0.2em]">© Kevin portfolio.</p>
     </footer>
 
     <!-- 影片燈箱（點作品彈出播放）-->
@@ -333,43 +338,21 @@
 
         const filmDialog = document.getElementById('film-dialog');
         const filmMedia = document.getElementById('film-media');
-        const boardNav = document.getElementById('board-nav');
-        let boardNumber = 1;
-
-        function showBoard(number) {
-            boardNumber = number;
-            const image = new Image();
-            image.src = 'period-' + number + '.webp';
-            image.alt = '台灣年代犯罪故事，分鏡 ' + number;
-            filmMedia.replaceChildren(image);
-            document.getElementById('board-count').textContent = number + ' / 3';
-            document.getElementById('prev-board').disabled = number === 1;
-            document.getElementById('next-board').disabled = number === 3;
-        }
-
         document.querySelectorAll('.film-card').forEach(card => {
             card.addEventListener('click', () => {
                 const {source, title} = card.dataset;
                 document.getElementById('film-title').textContent = title;
-                const isBoard = source === 'period-1';
-                boardNav.hidden = !isBoard;
                 filmDialog.showModal();
                 document.body.style.overflow = 'hidden';
-                if (isBoard) {
-                    showBoard(1);
-                } else {
-                    const video = document.createElement('video');
-                    video.controls = true;
-                    video.playsInline = true;
-                    video.poster = source + '.webp';
-                    video.src = source + '.mp4';
-                    filmMedia.replaceChildren(video);
-                    video.play().catch(() => {});
-                }
+                const video = document.createElement('video');
+                video.controls = true;
+                video.playsInline = true;
+                video.poster = source + '.webp';
+                video.src = source + '.mp4';
+                filmMedia.replaceChildren(video);
+                video.play().catch(() => {});
             });
         });
-        document.getElementById('prev-board').onclick = () => showBoard(boardNumber - 1);
-        document.getElementById('next-board').onclick = () => showBoard(boardNumber + 1);
         document.getElementById('film-close').onclick = () => filmDialog.close();
         filmDialog.addEventListener('click', event => {
             if (event.target === filmDialog) {

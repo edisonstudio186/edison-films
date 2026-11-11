@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edison | 影音 · 影像敘事作品集</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@1,500;1,600&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player"></script>
+    <style>
+        :root { --bg:#0c0c0d; --panel:#111113; --line:#26262a; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter','Noto Sans TC', sans-serif;
+            background-color: var(--bg);
+            color: #e7e7e7;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .serif-italic { font-family:'Playfair Display', serif; font-style: italic; }
+        mux-player {
+            --media-object-fit: cover;
+            width: 100%; height: 100%;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 分類按鈕 */
+        .filter-btn { border:1px solid var(--line); color:#9a9a9f; transition:.2s; }
+        .filter-btn.active { background:#fff; color:#0c0c0d; border-color:#fff; }
+
+        /* 旋轉圓形徽章 */
+        .spin-slow { animation: spin 16s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 跑馬燈 */
+        .marquee { overflow: hidden; }
+        .marquee-track { display:flex; width:max-content; animation: marquee 28s linear infinite; }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* 卡片互動 */
+        .card-hover { transition: transform .3s ease; }
+        @media (min-width:768px){ .card-hover:hover { transform: translateY(-6px); } }
+        .card-hover:active { transform: scale(.98); }
+
+        /* 播放圓鈕 */
+        .play-btn { backdrop-filter: blur(4px); }
+
+        /* 右下角懸浮聯絡框 */
+        #fab-menu { opacity:0; transform: translateY(12px); pointer-events:none; transition: all .28s ease; }
+        #fab.open #fab-menu { opacity:1; transform: translateY(0); pointer-events:auto; }
+        #fab.open .fab-toggle { background:#e7e7e7; }
+        #fab.open .fab-chat { display:none; }
+        .fab-item { transition: transform .2s ease; }
+        .fab-item:hover { transform: translateX(-4px); }
+        .fab-pill { opacity:0; transform: translateX(6px); transition: all .2s ease; }
+        .fab-item:hover .fab-pill { opacity:1; transform: translateX(0); }
+
+        .film-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr)); gap:1.25rem; }
+        .film-card { position:relative; text-align:left; overflow:hidden; border:1px solid #414146; border-radius:12px; color:white; background:#171719; }
+        .film-card img { width:100%; aspect-ratio:4/5; object-fit:cover; transition:transform .3s; }
+        .film-card:hover img { transform:scale(1.025); }
+        .film-caption { position:absolute; inset:auto 0 0; display:grid; padding:3.5rem 3.4rem 1.1rem 1.1rem; background:linear-gradient(transparent,rgba(0,0,0,.9)); }
+        .film-kind { font-size:.8rem; letter-spacing:.1em; } .film-caption strong { font-size:1.45rem; }
+        .film-icon { position:absolute; right:1rem; bottom:1.25rem; border:1px solid #fffa; border-radius:50%; width:2rem; height:2rem; display:grid; place-items:center; font-size:.8rem; }
+        #film-dialog { margin:auto; background:#161617; color:white; padding:.75rem 1rem; border:1px solid #464648; border-radius:12px; max-width:94vw; }
+        #film-dialog::backdrop { background:#000d; }
+        .film-toolbar,#board-nav:not([hidden]) { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
+        .film-toolbar h3 { font-weight:700; } #film-dialog button { padding:.5rem .75rem; }
+        #film-media video,#film-media img { display:block; margin:auto; max-height:71vh; max-height:71dvh; max-width:83vw; width:auto; object-fit:contain; }
+        button:focus-visible { outline:3px solid #93c5fd; outline-offset:2px; }
+        #board-nav button:disabled { opacity:.3; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- 導覽列 -->
+    <nav class="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
+        <div class="w-full xl:w-[70%] mx-auto px-5 py-4 flex justify-center xl:justify-between items-center">
+            <a href="#top" class="text-base font-black tracking-[0.2em]">Edison Portfolio<span class="text-white/40">.</span></a>
+            <span class="hidden xl:block text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Short Video · Filmmaker</span>
+        </div>
+    </nav>
+
+    <!-- 主視覺 / 滿板封面（文字疊在封面上）-->
+    <header id="top" class="cover-slot relative w-full overflow-hidden">
+
+        <!-- 背景封面照：完整顯示原圖、不裁切；桌機縮到 70% 寬置中 -->
+        <img src="cover.JPG" alt="Edison 剪輯行銷" class="block w-full h-auto xl:w-[70%] xl:mx-auto">
+
+    </header>
+
+    <!-- 跑馬燈 -->
+    <div class="marquee border-y border-white/10 py-5 my-6">
+        <div class="marquee-track text-xl xl:text-3xl font-bold tracking-tight text-white/30">
+            <span class="flex items-center shrink-0">
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+            </span>
+            <span class="flex items-center shrink-0" aria-hidden="true">
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+                <span class="px-8">影音企劃</span><span class="text-white/25">—</span>
+                <span class="px-8">影像拍攝</span><span class="text-white/25">—</span>
+                <span class="px-8">後製剪輯</span><span class="text-white/25">—</span>
+                <span class="px-8">內容策略</span><span class="text-white/25">—</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- 品牌敘述 -->
+    <section class="text-center px-6 py-20 max-w-4xl mx-auto">
+        <p class="serif-italic text-white/40 text-2xl xl:text-3xl mb-6">business.</p>
+        <h3 class="text-xl xl:text-5xl font-extrabold leading-snug">
+            懂內容，也懂行銷。<br>把每支影片，變成有效的溝通。
+        </h3>
+    </section>
+
+    <!-- 三大服務 -->
+    <section id="services" class="px-5 xl:px-0 xl:w-[70%] mx-auto w-full pb-8">
+        <!-- ▼▼▼ 換照片：把每張卡裡的 .photo-slot 換成 <img src="assets/images/xxx.jpg" class="w-full aspect-video object-cover"> ▼▼▼ -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <article class="card-hover border border-white/10 rounded-xl overflow-hidden">
+                <img src="car.png" alt="汽車動態攝影" class="w-full aspect-video object-cover">
+                <div class="p-6 text-center xl:text-left">
+                    <h4 class="text-lg xl:text-2xl font-bold mt-2">01. 汽車動態攝影 / 剪輯</h4>
+                </div>
+            </article>
+            <article class="card-hover border border-white/10 rounded-xl overflow-hidden">
+                <img src="business.png" alt="商業精華剪輯" class="w-full aspect-video object-cover">
+                <div class="p-6 text-center xl:text-left">
+                    <h4 class="text-lg xl:text-2xl font-bold mt-2">02. 商業精華剪輯</h4>
+                </div>
+            </article>
+            <article class="card-hover border border-white/10 rounded-xl overflow-hidden">
+                <img src="ai.png" alt="AI  赋能短影音" class="w-full aspect-video object-cover">
+                <div class="p-6 text-center xl:text-left">
+                    <h4 class="text-lg xl:text-2xl font-bold mt-2">03. AI  赋能短影音</h4>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- 作品區 -->
+    <section id="work" class="w-full px-5 xl:w-[70%] xl:px-0 mx-auto mt-16">
+        <h2 class="text-3xl xl:text-5xl font-black tracking-tight mb-8">劇情短片 <span class="serif-italic font-normal text-white/40">/ Works</span></h2>
+        <div class="film-grid">
+            <button class="film-card" type="button" data-source="tiger" data-title="小虎" aria-haspopup="dialog">
+                <img src="tiger.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 26 秒</span><strong>小虎</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="settlement" data-title="工程周轉與交割" aria-haspopup="dialog">
+                <img src="settlement.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 19 秒</span><strong>工程周轉與交割</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="period-1" data-title="台灣年代犯罪故事" aria-haspopup="dialog">
+                <img src="period-1.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">分鏡 · 3 張</span><strong>台灣年代犯罪故事</strong></span>
+                <span class="film-icon" aria-hidden="true">▧</span>
+            </button>
+            <button class="film-card" type="button" data-source="action" data-title="犯罪與動作短片" aria-haspopup="dialog">
+                <img src="action.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 30 秒</span><strong>犯罪與動作短片</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="factory" data-title="食品工廠" aria-haspopup="dialog">
+                <img src="factory.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 4 秒</span><strong>食品工廠</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="lounge" data-title="酒店包廂" aria-haspopup="dialog">
+                <img src="lounge.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 25 秒</span><strong>酒店包廂</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="office" data-title="辦公室微電影" aria-haspopup="dialog">
+                <img src="office.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 21 秒</span><strong>辦公室微電影</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="seafood" data-title="龍哥與海產" aria-haspopup="dialog">
+                <img src="seafood.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 15 秒</span><strong>龍哥與海產</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+            <button class="film-card" type="button" data-source="repayment" data-title="還款衝突" aria-haspopup="dialog">
+                <img src="repayment.webp" alt="" loading="lazy">
+                <span class="film-caption"><span class="film-kind">短片 · 24 秒</span><strong>還款衝突</strong></span>
+                <span class="film-icon" aria-hidden="true">▶</span>
+            </button>
+        </div>
+        <dialog id="film-dialog" aria-labelledby="film-title">
+            <div class="film-toolbar"><h3 id="film-title"></h3><button type="button" id="film-close" aria-label="關閉作品">✕</button></div>
+            <div id="film-media"></div>
+            <div id="board-nav" hidden><button type="button" id="prev-board" aria-label="上一張分鏡">←</button><span id="board-count" aria-live="polite"></span><button type="button" id="next-board" aria-label="下一張分鏡">→</button></div>
+        </dialog>
+    </section>
+
+    <!-- 關於我 -->
+    <section id="about" class="mt-20 py-20 px-6 border-t border-white/10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-20 items-center">
+
+            <!-- 左：理念 / 價值 -->
+            <div>
+                <h2 class="text-3xl xl:text-4xl font-black mb-6 tracking-tight">關於我 <span class="serif-italic font-normal text-white/40">/ About</span></h2>
+                <div class="space-y-5 text-base xl:text-xl text-white/60 leading-relaxed font-light max-w-2xl">
+                    <p>一部影片剪得好看，就一定能帶來客戶嗎？</p>
+                    <p>我認為，畫面精緻、節奏流暢，只是一部影片最基本的條件。</p>
+                    <p>真正重要的是，它能不能在前三秒抓住觀眾、把產品價值講清楚，最後引導觀眾採取行動，替品牌帶來詢問與轉換。</p>
+                    <p>嗨，大家好，我是 Edison。</p>
+                    <p>我擁有四、五年的攝影與剪輯經驗，同時也做過銷售、接觸過行銷，更有實際創業的經驗。</p>
+                    <p>所以在製作影片時，我不會只站在剪輯師的角度思考，而是會從品牌定位、消費者心理和銷售流程出發，去設計影片的 Hook、內容節奏以及 CTA。</p>
+                    <p>除了傳統的拍攝與剪輯，我也會運用 AI 動畫、視覺特效和場景設計，把原本難以拍攝、難以理解的內容，轉化成更直觀、更有記憶點的畫面。</p>
+                    <p>我提供的不只是剪輯技術，而是一套結合影像、AI、行銷與銷售思維的內容解決方案。</p>
+                    <p>因為一部真正有效的影片，不只要有人看，更要讓對的人看懂、相信，最後願意採取行動。</p>
+                    <p>如果你也希望影片不只是好看，而是能真正幫品牌創造價值，我是 Edison，期待與你一起完成下一部作品。</p>
+                </div>
+            </div>
+
+            <!-- 右：自我介紹影片（直式 9:16，點擊放大播放） -->
+            <div class="flex justify-center xl:justify-end">
+                <div class="relative cursor-pointer w-full max-w-[460px] aspect-[9/16] rounded-2xl border border-white/10 overflow-hidden bg-black card-hover" onclick="openVideo('MVvK1CNji8JBkFSHgHXMP01ysYwysIfz9rDzm8emJn38','9/16')">
+                    <mux-player playback-id="MVvK1CNji8JBkFSHgHXMP01ysYwysIfz9rDzm8emJn38" metadata-video-title="intro" stream-type="on-demand" autoplay="muted" loop muted playsinline style="--controls:none;pointer-events:none;"></mux-player>
+                    <span class="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-white text-sm pointer-events-none">⤢</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 聯絡區 -->
+    <footer id="contact" class="py-20 px-6 text-center bg-[var(--panel)] mt-auto border-t border-white/10">
+        <h2 class="text-xl xl:text-3xl font-bold tracking-tight mb-3">Let's make it together</h2>
+        <p class="text-xl xl:text-3xl font-bold mb-8">有拍攝或剪輯需求？直接聊聊吧。</p>
+        <p class="mt-16 text-[10px] text-white/20 tracking-[0.2em]">© Edison portfolio.</p>
+    </footer>
+
+    <!-- 影片燈箱（點作品彈出播放）-->
+    <div id="video-modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeVideo()">
+        <button aria-label="關閉" onclick="event.stopPropagation();closeVideo()" class="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white text-2xl flex items-center justify-center transition">✕</button>
+        <div id="video-modal-inner" class="h-[85vh] max-w-[92vw] rounded-xl overflow-hidden bg-black" onclick="event.stopPropagation()"></div>
+    </div>
+
+    <!-- 右下角懸浮聯絡框 -->
+    <div id="fab" class="fixed bottom-6 right-6 xl:bottom-14 xl:right-16 z-[60] flex flex-col items-end gap-3">
+        <!-- 展開的聯絡方式 -->
+        <div id="fab-menu" class="flex flex-col items-end gap-3 pr-6 xl:pr-12">
+            <!-- LINE -->
+            <a href="https://lin.ee/ZNlWg6q" target="_blank" class="fab-item flex items-center gap-2">
+                <span class="fab-pill text-xs font-bold bg-white text-black px-3 py-1 rounded-full shadow">LINE</span>
+                <span class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg" style="background:#06C755">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M24 10.3C24 4.94 18.62.57 12 .57S0 4.94 0 10.3c0 4.81 4.27 8.84 10.03 9.61.39.08.92.26 1.06.59.12.3.08.78.04 1.08l-.17 1.03c-.05.3-.24 1.19 1.04.65s6.91-4.07 9.43-6.97h-.01C23.17 15.34 24 13.4 24 10.3zM8.1 12.94a.23.23 0 0 1-.23.23H4.5a.23.23 0 0 1-.23-.23V7.7a.23.23 0 0 1 .23-.24h.84c.13 0 .23.11.23.24v4.15h2.29c.12 0 .23.1.23.23zm2.03 0a.23.23 0 0 1-.23.23h-.84a.23.23 0 0 1-.23-.23V7.7c0-.13.1-.24.23-.24h.84c.12 0 .23.11.23.24zm5.81 0a.23.23 0 0 1-.24.23h-.83a.24.24 0 0 1-.19-.1l-2.4-3.24v3.11a.23.23 0 0 1-.23.23h-.84a.23.23 0 0 1-.23-.23V7.7c0-.13.1-.24.23-.24h.9l.02.02 2.4 3.23V7.7c0-.13.1-.24.23-.24h.84c.13 0 .24.11.24.24zm4.66-4.4a.23.23 0 0 1-.24.24h-2.28v.88h2.28c.13 0 .24.1.24.23v.84a.23.23 0 0 1-.24.23h-2.28v.89h2.28c.13 0 .24.1.24.23v.84a.23.23 0 0 1-.24.23h-3.35a.23.23 0 0 1-.23-.23V7.7a.23.23 0 0 1 .23-.24h3.35c.13 0 .24.11.24.24z"/></svg>
+                </span>
+            </a>
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/1n1n.es?igsh=MXN5bnJ3azhjNWQ3Mg%3D%3D&utm_source=qr" target="_blank" class="fab-item flex items-center gap-2">
+                <span class="fab-pill text-xs font-bold bg-white text-black px-3 py-1 rounded-full shadow">Instagram</span>
+                <span class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.64-.07-4.85s.01-3.58.07-4.85c.15-3.23 1.66-4.77 4.92-4.92C8.42 2.17 8.8 2.16 12 2.16zm0-2.16C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.41-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                </span>
+            </a>
+            <!-- Gmail -->
+            <a href="mailto:edisonstudio186@gmail.com" class="fab-item flex items-center gap-2">
+                <span class="fab-pill text-xs font-bold bg-white text-black px-3 py-1 rounded-full shadow">Gmail</span>
+                <span class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg bg-white border border-black/10">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 5.5h18c.83 0 1.5.67 1.5 1.5v10c0 .83-.67 1.5-1.5 1.5H3c-.83 0-1.5-.67-1.5-1.5V7c0-.83.67-1.5 1.5-1.5z" fill="#fff" stroke="#EA4335" stroke-width="1.2"/><path d="M2.5 7.2L12 13l9.5-5.8" stroke="#EA4335" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+                </span>
+            </a>
+            <!-- Telegram -->
+            <a href="https://t.me/eedd2398" target="_blank" class="fab-item flex items-center gap-2">
+                <span class="fab-pill text-xs font-bold bg-white text-black px-3 py-1 rounded-full shadow">Telegram</span>
+                <span class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg" style="background:#229ED9">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M11.94 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.06 0zm4.96 7.22c.1 0 .32.02.47.14a.5.5 0 0 1 .17.33c.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.23-.46-1.9-.9-1.06-.7-1.65-1.12-2.68-1.8-1.18-.78-.42-1.21.26-1.91.17-.18 3.25-2.98 3.3-3.23.01-.03.01-.15-.05-.21-.07-.06-.17-.04-.25-.02-.1.02-1.8 1.14-5.06 3.34-.48.33-.91.5-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.24-1.35-.37-1.3-.79.03-.21.33-.43.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z"/></svg>
+                </span>
+            </a>
+        </div>
+
+        <!-- 主按鈕：手機/桌機都是圓形圖（帶脈動光環）-->
+        <div class="relative">
+            <span class="absolute inset-0 rounded-full bg-white/20 animate-ping pointer-events-none"></span>
+            <button onclick="toggleFab()" aria-label="聯繫我" class="fab-toggle relative bg-white text-black font-bold shadow-xl active:scale-95 transition flex flex-col items-center justify-center gap-1 w-24 h-24 rounded-full text-xs tracking-widest xl:gap-1.5 xl:w-36 xl:h-36 xl:text-xl">
+                <svg class="fab-chat block w-6 h-6 xl:w-8 xl:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <span class="fab-label-closed">聯繫我</span>
+                <span class="fab-label-open hidden">關閉 ✕</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 影片燈箱
+        function openVideo(id, ratio) {
+            const modal = document.getElementById('video-modal');
+            const inner = document.getElementById('video-modal-inner');
+            inner.style.aspectRatio = ratio;
+            inner.innerHTML = '<mux-player playback-id="' + id + '" stream-type="on-demand" autoplay playsinline style="width:100%;height:100%"></mux-player>';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeVideo() {
+            const modal = document.getElementById('video-modal');
+            document.getElementById('video-modal-inner').innerHTML = ''; // 清空以停止播放
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
+
+        function toggleFab() {
+            const fab = document.getElementById('fab');
+            const open = fab.classList.toggle('open');
+            fab.querySelector('.fab-label-closed').classList.toggle('hidden', open);
+            fab.querySelector('.fab-label-open').classList.toggle('hidden', !open);
+        }
+
+        const filmDialog = document.getElementById('film-dialog');
+        const filmMedia = document.getElementById('film-media');
+        const boardNav = document.getElementById('board-nav');
+        let boardNumber = 1;
+
+        function showBoard(number) {
+            boardNumber = number;
+            const image = new Image();
+            image.src = 'period-' + number + '.webp';
+            image.alt = '台灣年代犯罪故事，分鏡 ' + number;
+            filmMedia.replaceChildren(image);
+            document.getElementById('board-count').textContent = number + ' / 3';
+            document.getElementById('prev-board').disabled = number === 1;
+            document.getElementById('next-board').disabled = number === 3;
+        }
+
+        document.querySelectorAll('.film-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const {source, title} = card.dataset;
+                document.getElementById('film-title').textContent = title;
+                const isBoard = source === 'period-1';
+                boardNav.hidden = !isBoard;
+                filmDialog.showModal();
+                document.body.style.overflow = 'hidden';
+                if (isBoard) {
+                    showBoard(1);
+                } else {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.playsInline = true;
+                    video.poster = source + '.webp';
+                    video.src = source + '.mp4';
+                    filmMedia.replaceChildren(video);
+                    video.play().catch(() => {});
+                }
+            });
+        });
+        document.getElementById('prev-board').onclick = () => showBoard(boardNumber - 1);
+        document.getElementById('next-board').onclick = () => showBoard(boardNumber + 1);
+        document.getElementById('film-close').onclick = () => filmDialog.close();
+        filmDialog.addEventListener('click', event => {
+            if (event.target === filmDialog) {
+                const rect = filmDialog.getBoundingClientRect();
+                if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) filmDialog.close();
+            }
+        });
+        filmDialog.addEventListener('close', () => {
+            filmMedia.replaceChildren();
+            document.body.style.overflow = '';
+        });
+    </script>
+</body>
+</html>
